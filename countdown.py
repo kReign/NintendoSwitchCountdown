@@ -1,4 +1,4 @@
-# Ported and modified from https://github.com/matchu/reddit-countdown by /u/k_Reign
+# Modified from https://github.com/matchu/reddit-countdown by /u/k_Reign
 
 import praw
 import time
