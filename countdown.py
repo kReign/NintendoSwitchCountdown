@@ -1,4 +1,5 @@
-# Modified from https://github.com/matchu/reddit-countdown by /u/k_Reign
+# Ported from PRAW 3 to 4 and Modified from
+# https://github.com/matchu/reddit-countdown by /u/k_Reign
 
 import praw
 import time
