@@ -56,7 +56,7 @@ def update_countdown(subreddit, target):
     description = re.sub(pattern, repl, description)
 
     subreddit.mod.update(description = description)
-    print("Updated countdown to: " + description)
+    print("Updated countdown to: " + repl)
     
 def main():
     config_parser = SafeConfigParser()
@@ -95,6 +95,7 @@ def main():
     frequency_reminder_counter = 0
     starttime=time.time()
     while True:
+        subreddit = reddit.subreddit(subreddit_name)
         update_countdown(subreddit, target_datetime)
         
         frequency_reminder_counter += 1
