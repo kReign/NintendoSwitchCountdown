@@ -1,7 +1,20 @@
 [reddit]
+
+; This is the username, password, id, and secret for the bot and app.
 username = MyBot
 password = password
-subreddit = subreddit
 id = 1234567891234
 secret = kH402Krif92mf94jd01JRfd04R4
+
+; This is the user agent description for the bot.
+user_agent = “test bot for test sub”
+
+; Subreddit being targeted by the bot.
+subreddit = subreddit
+
+; This is the name of the element on the subreddit description to put the result:
+; [something](#target_element)
+target_element = example
+
+; This is the target date and time.
 target: Jan 15 2018 00:00

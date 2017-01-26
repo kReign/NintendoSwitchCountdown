@@ -1,11 +1,15 @@
-# Ported from PRAW 3 to 4 and Modified from
-# https://github.com/matchu/reddit-countdown by /u/k_Reign
+# Ported from PRAW 3 to 4 and Modified by /u/k_Reign from
+# https://github.com/matchu/reddit-countdown 
 
 import praw
 import time
 from datetime import datetime
 from configparser import SafeConfigParser
 import re
+
+# This is the name of the config file that the account and subreddit info
+# is pulled from.
+ConfigFileName = "countdown.cfg"
 
 # This should have one of the following values:
 # "every_day"
@@ -17,7 +21,7 @@ UpdateFrequency = "every_minute"
 ReminderUpdate = 5
 
 # Computes the new countdown and returns a string with the value.
-def compute_time_delta_string(target):
+def compute_time_delta_string(target, targetname):
     countdown_delta = target - datetime.now()
     days = countdown_delta.days
     hours = countdown_delta.seconds // 3600
@@ -42,41 +46,43 @@ def compute_time_delta_string(target):
     else:
         result_string += str(days) + " " + units[0] + " " + str(hours) + " " + units[1] + " " + str(minutes) + " " + units[2]
 
-    result_string += "](#countdown)"
+    result_string += "](#" + targetname +")"
 
     return result_string
 
 # Updates the countdown on the subreddit sidebar
-def update_countdown(subreddit, target):
+def update_countdown(subreddit, target, targetname):
 
     description = subreddit.description
 
-    pattern = "\\[[^\\]]*\\]\\(#{0}\\)".format('countdown')
-    repl = compute_time_delta_string(target)
+    pattern = "\\[[^\\]]*\\]\\(#{0}\\)".format(targetname)
+    repl = compute_time_delta_string(target, targetname)
     description = re.sub(pattern, repl, description)
 
     subreddit.mod.update(description = description)
-    print("Updated countdown to: " + repl)
+    print("Updated " + targetname + " to: " + repl)
     
 def main():
     config_parser = SafeConfigParser()
-    config_parser.read('countdown.cfg')
+    config_parser.read(ConfigFileName)
 
     # Grab the OAuth info from the config file.
     u_username = config_parser.get('reddit', 'username')
     u_password = config_parser.get('reddit', 'password')
+    c_useragent = config_parser.get('reddit', 'user_agent')
     c_id = config_parser.get('reddit', 'id')
     c_secret = config_parser.get('reddit', 'secret')
+    
     subreddit_name = config_parser.get('reddit', 'subreddit')
+    TargetElementName = config_parser.get('reddit', 'target_element')
 
     # Login and get our reddit instance.
     reddit = praw.Reddit(client_id = c_id,
                          client_secret = c_secret,
                          password = u_password,
-                         user_agent = 'Switch Countdown',
+                         user_agent = c_useragent,
                          username = u_username)
     
-    subreddit = reddit.subreddit(subreddit_name)
     target = config_parser.get('reddit', 'target')
     target_datetime = datetime.strptime(target, '%B %d %Y %H:%M')
 
@@ -96,7 +102,7 @@ def main():
     starttime=time.time()
     while True:
         subreddit = reddit.subreddit(subreddit_name)
-        update_countdown(subreddit, target_datetime)
+        update_countdown(subreddit, target_datetime, TargetElementName)
         
         frequency_reminder_counter += 1
         if frequency_reminder_counter is ReminderUpdate:
